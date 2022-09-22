@@ -218,8 +218,8 @@ $(document).ready(function() {
 		if (levelNums === 0) return
 		stopFlag = false
 		let res = await fn2(levelNums) // 先通关一次
+		$('#content').html('已经为您刷通关1次');
 		if (res.err_code === 0 && frequencyLength > 1) { // 通关成功，开始循环刷次数
-			$('#content').html('已经为您刷通关1次');
 			limitQueueFn(Number(frequencyLength - 1), Number(frequencyLimit) || 10, fn)
 		}
 	});
