@@ -1,4 +1,5 @@
-let stopFlag = false
+let timer 
+let GLOBALfrequencyLength = 0
 $(document).ready(function() {
 	const fn = (t) => {
 		t = t + 1
@@ -7,51 +8,26 @@ $(document).ready(function() {
 				'icon': 16
 			});
 			var token = $('#token').val();
-			let type = $("input:radio:checked").val()
-			let url = ""
-			if (type == "1") {
-				$.ajax({
-					'cache': true,
-					'type': 'get',
-					'url': "https://cat-match.easygame2021.com/sheep/v1/game/update_user_skin?skin=1&t=" + token,
-					'dataType': 'json',
-					'success': function(result) {
-						layer.closeAll()
-						if (result.data.ts === 0) {
-							$('#content').html('本次通关失败，第' + t + '次');
-						} else {
-							$('#content').html('已经为您刷通关' + t + '次');
-						}
-						resolve(result)
-					},
-					'error': function(err) {
-						layer.closeAll()
-						$('#content').html('通关失败');
-						resolve(result)
-					}
-				});
-			} else {
-				url = "https://cat-match.easygame2021.com/sheep/v1/game/topic_game_over?rank_score=1&rank_state=1&rank_time=359&rank_role=1&skin=1"
-				$.ajax({
-					'cache': true,
-					'type': 'get',
-					'url': url,
-					'data': {
-						't': token,
-					},
-					'dataType': 'json',
-					'success': function(result) {
-						layer.closeAll()
-						$('#content').html('已经为您刷通关' + t + '次');
-						resolve(result)
-					},
-					'error': function(err) {
-						layer.closeAll()
-						$('#content').html('通关失败');
-						resolve(result)
-					}
-				});
-			}
+			let url = "https://cat-match.easygame2021.com/sheep/v1/game/topic_game_over?rank_score=1&rank_state=1&rank_time=359&rank_role=1&skin=1"
+			$.ajax({
+				'cache': true,
+				'type': 'get',
+				'url': url,
+				'data': {
+					't': token,
+				},
+				'dataType': 'json',
+				'success': function(result) {
+					layer.closeAll()
+					$('#content').html('已经为您刷通关' + t + '次');
+					resolve(result)
+				},
+				'error': function(err) {
+					layer.closeAll()
+					$('#content').html('通关失败');
+					resolve(result)
+				}
+			});
 		})
 	};
 
@@ -62,6 +38,7 @@ $(document).ready(function() {
 			});
 			var token = $('#token').val();
 			let MatchPlayInfo = getMatchPlayInfo(levelNums)
+			
 			if (!MatchPlayInfo) {
 				return
 			}
@@ -126,6 +103,7 @@ $(document).ready(function() {
 						resolve(0)
 					} else {
 						let map_md5 = result.data.map_md5[1]
+						console.log(map_md5);
 						$.ajax({
 							'type': 'get',
 							'url': "https://cat-match-static.easygame2021.com/maps/" + map_md5 + ".txt",
@@ -169,7 +147,7 @@ $(document).ready(function() {
 	 * limit 是每次并行发起多少个请求
 	 * handleFn 就是异步处理函数
 	 */
-	function limitQueueFn(number, limit, handleFn) {
+	 function limitQueueFn(number, limit, handleFn) {
 		console.log(number);
 		if (number < limit) {
 			limit = number
@@ -189,19 +167,17 @@ $(document).ready(function() {
 				// resolve 返回 promise
 				resolve(handleFn(index))
 			}).then(() => {
-				if (stopFlag) {
-					return
-				}
 				if (index < number) {
 					run()
 				}
 			})
 		}
 	};
+
 	$('#get_code').click(async function() {
 		var token = $('#token').val();
 		var frequencyLength = $('#frequency').val();
-		var frequencyLimit = $('#frequencyLimit').val();
+		var frequencyLimit = 1
 		if (token == '') {
 			layer.msg('请输入你的 token', {
 				'icon': 5
@@ -213,23 +189,85 @@ $(document).ready(function() {
 			});
 			return;
 		}
-		layer.msg('开始获取地图数据');
-		let levelNums = await fn3() // 先获取今天多少张卡片
-		if (levelNums === 0) return
-		stopFlag = false
-		let res = await fn2(levelNums) // 先通关一次
-		$('#content').html('已经为您刷通关1次');
-		if (res.err_code === 0 && frequencyLength > 1) { // 通关成功，开始循环刷次数
-			limitQueueFn(Number(frequencyLength - 1), Number(frequencyLimit) || 10, fn)
+		let type = $("input:radio:checked").val()
+		if(type==1){
+			GLOBALfrequencyLength = 0
+			gameOver()
+		}else{
+			limitQueueFn(Number(frequencyLength), Number(frequencyLimit) || 1, fn)
 		}
 	});
 
-	$('#stop_limit').click(function() {
-		stopFlag = true
-	});
+	async function gameOver() {
+		layer.msg('开始获取地图数据');
+		let userInfo = await getPersonInfo()
+		if(userInfo.err_code!=0){
+			layer.msg(userInfo.err_msg, {
+				'icon': 5
+			});
+			return
+		}
+		let {win_count} = userInfo.data
+		$('#content').html('当前次数：'+win_count);
+		let levelNums = await fn3() // 先获取今天多少张卡片
+		if (levelNums === 0) return
+		layer.msg('等待60秒');
+
+		let time = 61;//倒计的时间
+        //创建定时器
+        let timer = setInterval(async function () {
+            if (time == 0) {
+				//清除定时器效果
+                clearInterval(timer);
+				layer.closeAll()
+				layer.msg('开始本次通关');
+				let res = await fn2(levelNums) // 先通关一次
+				if(res.err_code===0){
+					let userInfo = await getPersonInfo()
+					let New_win_count = userInfo.data.win_count
+					if(New_win_count!==win_count){
+						$('#content').html('当前次数：'+New_win_count);
+						GLOBALfrequencyLength++
+						if(GLOBALfrequencyLength == $('#frequency').val()){
+							layer.msg('通关结束');
+							return
+						}else{
+							layer.msg('本次通关成功，开始下次通关');
+							gameOver()
+						}
+					}else{
+						layer.msg('本次通关失败，结束');
+					}
+				}
+            } else {
+				layer.msg('等待60秒，'+"还剩" + time + "秒");
+                time--;
+            }
+        }, 1000);//每隔1s调用一次
+	}
 
 	function generateRandomInteger(min, max) {
 		return Math.floor(Math.random() * (max - min + 1)) + min;
+	}
+
+	function getPersonInfo() {
+		return new Promise((resolve, reject) => {
+			var token = $('#token').val();
+			$.ajax({
+				'cache': true,
+				'type': 'get',
+				'url': "https://cat-match.easygame2021.com/sheep/v1/game/personal_info?t=" + token,
+				'success': function(result) {
+					resolve(result)
+				},
+				'error': function(err) {
+					layer.closeAll()
+					layer.msg('获取个人信息失败');
+					$('#content').html('获取个人信息失败');
+					reject(err)
+				}
+			});
+		})
 	}
 
 	function getMatchPlayInfo(levelNums) {
