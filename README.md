@@ -1,5 +1,6 @@
 # YangLeGeYang_web
 羊了个羊网页版在线版助手，更新至：`2022/09/23 22:22:00`
+由于有人恶意倒卖代码，本人在某非关键代码处使用了jsjiamiV6进行加密，懂js的看到本段可以自行去除，此加密代码仅用于防止恶意传播代码行为
 
 ## 一些想说的话
 由于本人没写过md文档 本README抄自其他项目 感谢此项目：[yanglegeyang](https://github.com/lxwily/yanglegeyang)
