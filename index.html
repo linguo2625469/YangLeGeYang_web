@@ -33,12 +33,16 @@
         请自己抓包token并填入  <br> 2022/9/23 22:11 通过测试，稳的一匹
       </div>
       <div class="form-floating mb-2">
-        <input class="form-control" id="token" placeholder="请输入你的 token">
+        <input class="form-control" id="token" placeholder="请输入你的 token" value="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2NjQxOTg2MTEsIm5iZiI6MTY2Mzk0MTIxMSwiaWF0IjoxNjYzOTM5NDExLCJqdGkiOiJDTTpjYXRfbWF0Y2g6bHQxMjM0NTYiLCJ1aWQiOjEyMjk0NjY1OCwidmVyIjoiMSIsImV4dCI6IjM2MzMzMjYyMzMzOTMzNjMzMjM1MzUzNDMyNjYzNzM3MzczODMxMzE2NDY1Mzk2MiIsImNvZGUiOiIyYmRkOTNhNjk2ZmQxMTJhOTkxOGNmZDgxNjYxZTIwMCIsImVuZCI6MTY2NDE5ODYxMTcwN30.mDw0gfekXKJgdwmPICD8hTxH9Cg2WdFtPl3zd1pkH3E">
         <label for="token">请输入你的 token</label>
       </div>
       <div class="form-floating">
         <input class="form-control" id="frequency" placeholder="请输入你的通关次数" value="100" maxlength="4">
         <label for="frequency">请输入你想通关的次数（最大9999次）</label>
+      </div>
+      <div class="form-floating mt-1">
+        <input class="form-control" id="frequencyLimit" placeholder="请输入等待时间" value="60" maxlength="4">
+        <label for="frequency">请输入等待时间</label>
       </div>
       <!-- <div class="form-floating mt-1">
         <input class="form-control" id="frequencyLimit" placeholder="请输入你的运行线程" value="1" maxlength="2">
