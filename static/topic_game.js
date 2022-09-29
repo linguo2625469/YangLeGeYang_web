@@ -37,7 +37,7 @@ $(document).ready(function() {
 			$.ajax({
 				'cache': true,
 				'type': 'get',
-				'url': "https://cat-match.easygame2021.com/sheep/v1/game/map_info_ex?matchType=3&t=" + token,
+				'url': "https://cat-match.easygame2021.com/sheep/v1/game/topic/game_start?t=" + token,
 				'success': function(result) {
 					if (result.err_code !== 0) {
 						if (result.err_msg === "没有权限") {
@@ -112,12 +112,14 @@ $(document).ready(function() {
 		layer.closeAll()
 		layer.msg('开始本次话题');
 		let res = await fn1(MatchPlayInfo,map_seed_2)
-		if(res.err_code===0){
-			layer.msg('话题通关结束');
+		console.log(res.data);
+		if(res&&res.data&&res.data.skin_id!==0){
+			layer.msg('话题通关成功，获取皮肤编码：'+res.data.skin_id);
+			$('#content').html('话题通关成功，获取皮肤编码：'+res.data.skin_id);
 		}else{
-			layer.msg('话题通关失败');
+			layer.msg('话题通关失败：'+res.err_msg);
+			$('#content').html('话题通关失败：'+res.err_msg);
 		}
-        
 	}
 
 	function getPersonInfo() {
