@@ -110,16 +110,18 @@ $(document).ready(function() {
 		let MatchPlayInfo = getMatchPlayInfo(JSON.parse(result))
 		console.log(MatchPlayInfo);
 		layer.closeAll()
-		layer.msg('开始本次话题');
-		let res = await fn1(MatchPlayInfo,map_seed_2)
-		console.log(res.data);
-		if(res&&res.data&&res.data.skin_id!==0){
-			layer.msg('话题通关成功，获取皮肤编码：'+res.data.skin_id);
-			$('#content').html('话题通关成功，获取皮肤编码：'+res.data.skin_id);
-		}else{
-			layer.msg('话题通关失败：'+res.err_msg);
-			$('#content').html('话题通关失败：'+res.err_msg);
-		}
+		layer.msg('开始本次话题,请等待',{time:5000});
+		setTimeout(async () => {
+			let res = await fn1(MatchPlayInfo,map_seed_2)
+			console.log(res.data);
+			if(res&&res.data&&res.data.skin_id!==0){
+				layer.msg('话题通关成功，获取皮肤编码：'+res.data.skin_id);
+				$('#content').html('话题通关成功，获取皮肤编码：'+res.data.skin_id);
+			}else{
+				layer.msg('话题通关失败：'+res.err_msg);
+				$('#content').html('话题通关失败：'+res.err_msg);
+			}
+		}, 5000);
 	}
 
 	function getPersonInfo() {
