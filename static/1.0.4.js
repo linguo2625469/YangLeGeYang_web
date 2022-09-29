@@ -1,6 +1,6 @@
 let timer 
 let GLOBALfrequencyLength = 0
-let XorShift ;
+let XorShift;
 var n = function() {
 	function t() {}
 	return Object.defineProperty(t, "instance", {
@@ -24,7 +24,7 @@ var n = function() {
 		return 2.3283064365386963e-10 * t[0] + 2.220446049250313e-16 * (t[1] >>> 12);
 	}, t._instance = null, t;
 }();
-XorShift = n, n.instance.setSeed([ 589667220, 4047304004, 62666966, 3333988324 ])
+XorShift = n
 $(document).ready(function() {
 	console.log();
 	const fn = (t) => {
@@ -77,7 +77,7 @@ $(document).ready(function() {
 					"rank_score": 1,
 					"rank_state": 1,
 					"rank_time": 600, // 通关时间
-					"rank_role": 1,
+					"rank_role": 2,
 					"skin": 1,
 					"MatchPlayInfo": MatchPlayInfo,
 					"MapSeed2":map_seed_2,
@@ -147,6 +147,7 @@ $(document).ready(function() {
 										levelNums++
 									})
 								}
+								XorShift.instance.setSeed(map_seed)
 								resolve({levelNums,map_seed_2,result,map_seed})
 							},
 							'error': function(err) {
@@ -388,27 +389,8 @@ $(document).ready(function() {
 		var operationList = []
 
 		function shuffle(t) {
-			console.log(mapSeed);
-			XorShift.instance.setSeed(mapSeed)
 			for (var e = t.length - 1; e >= 0; e--) {
 				var o = XorShift.instance.random(), n = Math.floor(o * (e + 1)), a = t[n];
-				// if($("#top-mic").length===0){
-				// 	layer.msg("请勿去除底部开源代码感谢位！！！")
-				// 	throw new Error('请勿去除底部开源代码感谢位！！！')
-				// }else{
-				// 	if($("#top-mic a").length===0){
-				// 		layer.msg("请勿去除底部开源代码感谢位！！！")
-				// 		throw new Error('请勿去除底部开源代码感谢位！！！')
-				// 	}else{
-				// 		if($("#top-mic a").html()!=="YangLeGeYang_web"){
-				// 			layer.msg("请勿去除底部开源代码感谢位！！！")
-				// 			throw new Error('请勿去除底部开源代码感谢位！！！')
-				// 		}else{
-				// 			if($("#top-mic a").attr("href")!=="https://github.com/linguo2625469/YangLeGeYang_web"){layer.msg("请勿去除底部开源代码感谢位！！！")
-				// 			throw new Error('请勿去除底部开源代码感谢位！！！')}
-				// 		}
-				// 	}
-				// }
 				t[n] = t[e], t[e] = a;
 			}
 			return t;
@@ -425,7 +407,10 @@ $(document).ready(function() {
 		}).sort(function(t, e) {
 			return t.cardType - e.cardType;
 		}), o = 0; o < e.length; o++) for (var n = 3 * e[o].cardNum, i = 0; i < n; i++) blockTypeArr.push(e[o].cardType);
+		console.log(blockTypeArr);
 		blockTypeArr = shuffle(blockTypeArr)
+		console.log(blockTypeArr);
+
 		let addBlockFunc = function(t) {
 			if (0 == t.type) {
 				var u = blockTypeArr.pop();
@@ -458,13 +443,24 @@ $(document).ready(function() {
 		console.log(JSON.parse(JSON.stringify(operationList)))
 
 		operationList.sort((a,b)=>{
-			return a.color - b.color
+			if(b.color !== a.color){
+				return b.color - a.color
+			}else{
+				return b.id-a.id
+			}
 		})
-		for (var u = operationList, p = [], h = 0; h < u.length; h++)
+		for (var u = operationList, p = [], h = 0; h < u.length; h++){
+			if(h===160){
+				p.push({
+					chessIndex: -4,
+					timeTag: -4
+				})
+			}
 			p.push({
 				chessIndex: u[h].id,
 				timeTag: u[h].color
 			})
+		}
 		GAMEDAILY = 3
 		GAMETOPIC = 4
 		for (var f = {
